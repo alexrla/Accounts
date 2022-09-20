@@ -41,7 +41,7 @@ const operation = () => {
 
         } else if(action === "Sacar") {
 
-
+            withdraw();
 
         } else if(action === "Sair") {
 
@@ -176,6 +176,7 @@ function addAmount(accountName, amount)    {
 
     const accountData = getAccount(accountName);
 
+    // Verificando se o valor foi digitado
     if(!amount) {
 
         console.log(chalk.bgRed.black("Ocorreu um erro, tente novamente mais tarde!"));
@@ -231,9 +232,85 @@ function getAccountBalance()    {
         ));
 
         operation();
-        
+
     })
     .catch((error) => console.log(error));
+
+}
+
+// Sacar valor
+function withdraw() {
+
+    inquirer.prompt([
+        {
+            name: "accountName",
+            message: "Qual o nome da sua conta?"
+        }
+    ])
+    .then((answer) => {
+
+        const accountName = answer["accountName"];
+
+        // Verificando a existência da conta
+        if(!checkAccount(accountName))  {
+
+            return withdraw();
+
+        }
+
+        inquirer.prompt([
+            {
+                name: "amount",
+                message: "Quanto você deseja sacar?"
+            }
+        ])
+        .then((answer) => {
+
+            const amount = answer["amount"];
+
+            removeAmount(accountName, amount);
+
+            operation();
+
+        })
+        .catch((error) => console.log(error));
+
+    })
+    .catch((error) => console.log(error));
+
+}
+
+function removeAmount(accountName, amount) {
+
+    const accountData = getAccount(accountName);
+
+    // Verificando se o valor foi digitado
+    if(!amount) {
+
+        console.log(chalk.bgRed.black("Ocorreu um erro, tente novamente mais tarde!"));
+
+        return withdraw();
+    }
+
+    if(accountData.balance < amount)    {
+
+        console.log(chalk.bgRed.black("Valor indisponível!"));
+
+        return withdraw();
+
+    }
+
+    accountData.balance = parseFloat(accountData.balance) - parseFloat(amount);
+
+    fs.writeFileSync(
+        `accounts/${accountName}.json`,
+        JSON.stringify(accountData),
+        (error) => console.log(error)
+    );
+
+    console.log(
+        chalk.green(`Foi realizado um saque de R$${amount} da sua conta!`)
+    );
 
 }
 
