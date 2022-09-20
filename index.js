@@ -31,6 +31,25 @@ const operations = () => {
 
             createAccount();
 
+        } else if(action === "Depositar")   {
+
+
+
+        } else if(action === "Consultar saldo") {
+
+
+
+        } else if(action === "Sacar") {
+
+
+
+        } else if(action === "Sair") {
+
+            console.log(chalk.bgBlue.black("Obrigado por usar o Accounts!"));
+
+            // Encerrando a execução do sistema
+            process.exit();
+
         }
 
     })
