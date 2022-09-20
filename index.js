@@ -37,7 +37,7 @@ const operation = () => {
 
         } else if(action === "Consultar saldo") {
 
-
+            getAccountBalance();
 
         } else if(action === "Sacar") {
 
@@ -192,7 +192,7 @@ function addAmount(accountName, amount)    {
         (error) => console.log(error)
     );
 
-    console.log(chalk.green(`Foi depositado, o valor de R$${amount} na sua conta`))
+    console.log(chalk.green(`Foi depositado, o valor de R$${amount} na sua conta`));
 
 }
 
@@ -201,6 +201,39 @@ function getAccount(accountName)    {
     const accountJSON = fs.readFileSync(`accounts/${accountName}.json`, { encoding: "utf8", flag: "r" });
 
     return JSON.parse(accountJSON);
+
+}
+
+// Consultar saldo
+function getAccountBalance()    {
+
+    inquirer.prompt([
+        {
+            name: "accountName",
+            message: "Qual o nome da sua conta?"
+        }
+    ])
+    .then((answer) => {
+
+        const accountName = answer["accountName"];
+
+        // Verificando a existência da conta
+        if(!checkAccount(accountName))  {
+
+            return getAccountBalance();
+
+        }
+
+        const accountData = getAccount(accountName);
+
+        console.log(chalk.bgBlue.black(
+            `Olá, o saldo da sua conta é de R$${accountData.balance}`
+        ));
+
+        operation();
+        
+    })
+    .catch((error) => console.log(error));
 
 }
 
